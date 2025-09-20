@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cheap Studio - Generative Playground</title>
+    <meta name="description" content="Generative playground UI demo">
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="./styles/main.css" as="style">
+    <link rel="preload" href="./scripts/main.js" as="script">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="./styles/main.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="./public/favicon.ico">
+</head>
+<body class="app">
+    <!-- Background gradient overlay -->
+    <div class="app__background-overlay"></div>
+    
+    <!-- Main application container -->
+    <div class="app__container">
+        <!-- Header Navigation -->
+        <header class="header" role="banner">
+            <div class="header__container">
+                <a href="#dashboard" class="header__logo" aria-label="Cheap Studio Home">
+                    Cheap Studio
+                </a>
+                
+                <nav class="nav" role="navigation" aria-label="Main navigation">
+                    <ul class="nav__list">
+                        <li class="nav__item">
+                            <a href="#dashboard" class="nav__link nav__link--active" data-page="dashboard">
+                                Dashboard
+                            </a>
+                        </li>
+                        <li class="nav__item">
+                            <a href="#generate-image" class="nav__link" data-page="generate-image">
+                                Generate · Image
+                            </a>
+                        </li>
+                        <li class="nav__item">
+                            <a href="#generate-video" class="nav__link" data-page="generate-video">
+                                Generate · Video
+                            </a>
+                        </li>
+                        <li class="nav__item">
+                            <a href="#usage" class="nav__link" data-page="usage">
+                                Usage
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="main" role="main">
+            <!-- Dashboard Page -->
+            <section id="dashboard" class="page page--active" aria-labelledby="dashboard-title">
+                <div class="page__container">
+                    <h1 id="dashboard-title" class="page__title">Dashboard</h1>
+                    
+                    <div class="dashboard__grid">
+                        <article class="card">
+                            <header class="card__header">
+                                <h2 class="card__title">Current Plan</h2>
+                            </header>
+                            <div class="card__content">
+                                <span class="dashboard__plan-info" id="current-plan">Starter · $10/mo</span>
+                            </div>
+                        </article>
+
+                        <article class="card">
+                            <header class="card__header">
+                                <h2 class="card__title">Images</h2>
+                            </header>
+                            <div class="card__content">
+                                <div class="progress-info">
+                                    <span class="progress-info__text">
+                                        <span id="images-used">12</span> / <span id="images-limit">100</span>
+                                    </span>
+                                    <span class="progress-info__percentage" id="images-percentage">12%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-bar__fill" id="images-progress" style="width: 12%"></div>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="card">
+                            <header class="card__header">
+                                <h2 class="card__title">Video Seconds</h2>
+                            </header>
+                            <div class="card__content">
+                                <div class="progress-info">
+                                    <span class="progress-info__text">
+                                        <span id="video-used">9</span> / <span id="video-limit">40</span>
+                                    </span>
+                                    <span class="progress-info__percentage" id="video-percentage">23%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-bar__fill" id="video-progress" style="width: 23%"></div>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Image Generation Page -->
+            <section id="generate-image" class="page" aria-labelledby="generate-image-title">
+                <div class="page__container page__container--wide">
+                    <header class="page__header">
+                        <p class="page__subtitle">Gemini 2.5 Flash Image playground (single file)</p>
+                        <h1 id="generate-image-title" class="page__title page__title--large">Image Generator</h1>
+                        <p class="page__description">
+                            Paste your Gemini API key, describe the change you want, and preview the
+                            generated image. This is a client-only playground.
+                        </p>
+                    </header>
+
+                    <div class="generator__grid">
+                        <!-- Main Generator Card -->
+                        <article class="card card--generator">
+                            <header class="card__header">
+                                <div class="card__header-content">
+                                    <div>
+                                        <h2 class="card__title">Gemini setup</h2>
+                                        <p class="card__description">Stored only while this tab is open.</p>
+                                    </div>
+                                    <span class="status-badge status-badge--ready">Model ready</span>
+                                </div>
+                            </header>
+                            
+                            <div class="card__content">
+                                <!-- API Configuration -->
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label for="api-key" class="form-label">Gemini API key</label>
+                                        <input 
+                                            type="password" 
+                                            id="api-key" 
+                                            class="form-input" 
+                                            placeholder="Alza..."
+                                            autocomplete="off"
+                                        >
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="model-select" class="form-label">Model</label>
+                                        <select id="model-select" class="form-select">
+                                            <option value="gemini-2.5-flash-image-preview">gemini-2.5-flash-image-preview</option>
+                                            <option value="gemini-2.5-flash">gemini-2.5-flash</option>
+                                            <option value="gemini-1.5-pro-latest">gemini-1.5-pro-latest</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Prompt Input -->
+                                <div class="form-group">
+                                    <div class="form-label-row">
+                                        <label for="prompt-input" class="form-label form-label--uppercase">Prompt</label>
+                                        <span class="form-hint">Tip: describe what to add, remove, or change.</span>
+                                    </div>
+                                    <textarea 
+                                        id="prompt-input" 
+                                        class="form-textarea" 
+                                        rows="4"
+                                        placeholder="Example: Replace the phone in the person hand with a banana. Keep lighting consistent."
+                                    ></textarea>
+                                </div>
+
+                                <!-- Image Upload Slots -->
+                                <div class="upload-grid">
+                                    <div class="upload-slot-container">
+                                        <div class="upload-slot" id="image-slot-1">
+                                            <div class="upload-slot__content">
+                                                <p class="upload-slot__title">Drop or click to upload</p>
+                                                <p class="upload-slot__subtitle">Required for edits</p>
+                                                <p class="upload-slot__filename" id="image-1-filename"></p>
+                                            </div>
+                                            <input type="file" class="upload-slot__input" accept="image/*" id="image-1-input">
+                                        </div>
+                                        <label class="upload-label">Image 1</label>
+                                    </div>
+                                    
+                                    <div class="upload-slot-container">
+                                        <div class="upload-label-row">
+                                            <span class="upload-label">Image 2 (style or reference)</span>
+                                            <button type="button" class="swap-button" id="swap-images">
+                                                Swap 1 ↔ 2
+                                            </button>
+                                        </div>
+                                        <div class="upload-slot" id="image-slot-2">
+                                            <div class="upload-slot__content">
+                                                <p class="upload-slot__title">Drop or click to upload</p>
+                                                <p class="upload-slot__subtitle">Optional</p>
+                                                <p class="upload-slot__filename" id="image-2-filename"></p>
+                                            </div>
+                                            <input type="file" class="upload-slot__input" accept="image/*" id="image-2-input">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Quick Presets -->
+                                <div class="presets">
+                                    <button type="button" class="preset-button" data-preset="Remove people">Remove people</button>
+                                    <button type="button" class="preset-button" data-preset="Phone -> banana">Phone → banana</button>
+                                    <button type="button" class="preset-button" data-preset="Side angle">Side angle</button>
+                                    <button type="button" class="preset-button" data-preset="Studio Ghibli style">Studio Ghibli style</button>
+                                    <button type="button" class="preset-button" data-preset="Colorize black and white">Colorize B&W</button>
+                                    <button type="button" class="preset-button" data-preset="Isometric">Isometric</button>
+                                </div>
+
+                                <div class="separator"></div>
+
+                                <!-- Controls -->
+                                <div class="controls">
+                                    <div class="checkbox-group">
+                                        <input type="checkbox" id="request-detail" class="checkbox">
+                                        <label for="request-detail" class="checkbox-label">
+                                            Request higher detail (may cost more)
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="button-group">
+                                        <button type="button" class="button button--secondary" id="clear-form">
+                                            Clear
+                                        </button>
+                                        <button type="button" class="button button--primary" id="generate-image-btn">
+                                            <span class="button__text">Generate</span>
+                                            <span class="button__loading">Generating...</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+
+                        <!-- Output Card -->
+                        <article class="card card--output">
+                            <header class="card__header">
+                                <h2 class="card__title">Output</h2>
+                                <p class="card__description">Your generated image preview appears here.</p>
+                            </header>
+                            
+                            <div class="card__content card__content--output">
+                                <div class="output-area" id="output-area">
+                                    <span class="output-area__placeholder">
+                                        Your results will display after you generate.
+                                    </span>
+                                </div>
+                                
+                                <div class="output-controls" id="output-controls" style="display: none;">
+                                    <span class="output-info">Download and inspect the output before sharing.</span>
+                                    <button type="button" class="button button--secondary button--small">
+                                        Download image
+                                    </button>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+
+                    <!-- Information and Cost Estimator -->
+                    <div class="info-grid">
+                        <!-- How it works -->
+                        <article class="card">
+                            <header class="card__header">
+                                <h2 class="card__title">How it works</h2>
+                            </header>
+                            <div class="card__content">
+                                <ol class="info-list">
+                                    <li>Paste your Gemini API key and pick the flash image model.</li>
+                                    <li>Describe the edit. Optionally drop a source image and style reference.</li>
+                                    <li>Press Generate. The app will call generateContent with text plus any inline images.</li>
+                                </ol>
+                                <div class="info-warning">
+                                    Troubleshooting: enable CORS for localhost or proxy through your backend.
+                                </div>
+                                <div class="info-docs">
+                                    Docs: Gemini image generation and editing.
+                                </div>
+                            </div>
+                        </article>
+
+                        <!-- Cost Estimator -->
+                        <article class="card" id="cost-estimator">
+                            <header class="card__header">
+                                <h2 class="card__title">Cost Estimator</h2>
+                            </header>
+                            <div class="card__content">
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label for="width-input" class="form-label">Width (px)</label>
+                                        <input 
+                                            type="number" 
+                                            id="width-input" 
+                                            class="form-input" 
+                                            value="1024" 
+                                            min="256" 
+                                            max="2048"
+                                        >
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="height-input" class="form-label">Height (px)</label>
+                                        <input 
+                                            type="number" 
+                                            id="height-input" 
+                                            class="form-input" 
+                                            value="1024" 
+                                            min="256" 
+                                            max="2048"
+                                        >
+                                    </div>
+                                </div>
+                                <div class="cost-info">
+                                    Megapixels billed (ceil): <strong id="megapixels">1 MP</strong>
+                                </div>
+                                <div class="separator"></div>
+                                <div class="cost-estimate">
+                                    Estimated cost: <strong id="estimated-cost">$0.003</strong>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Video Generation Page -->
+            <section id="generate-video" class="page" aria-labelledby="generate-video-title">
+                <div class="page__container">
+                    <h1 id="generate-video-title" class="page__title">Video Generation</h1>
+                    <div class="placeholder-content">
+                        <p>Video generation feature coming soon...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Usage Page -->
+            <section id="usage" class="page" aria-labelledby="usage-title">
+                <div class="page__container">
+                    <h1 id="usage-title" class="page__title">Usage Statistics</h1>
+                    <div class="placeholder-content">
+                        <p>Detailed usage analytics coming soon...</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer" role="contentinfo">
+            <div class="footer__container">
+                <p class="footer__text">UI prototype · Cheap Studio</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Loading indicator -->
+    <div class="loading-overlay" id="loading-overlay" style="display: none;">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="./scripts/main.js"></script>
+</body>
+</html>
