@@ -221,10 +221,23 @@ export default function ImageGeneratorPage() {
             <CardDescription>Your generated image preview appears here.</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-1 flex-col gap-4">
-            <div className="flex-1 rounded-lg border border-dashed border-white/15 bg-slate-950/50 p-6 text-center text-sm text-white/60">
-              {loading && <span>Generating preview...</span>}
-              {!loading && output && <span>{output}</span>}
-              {!loading && !output && <span>Your results will display after you generate.</span>}
+            <div className="flex flex-1 items-center justify-center rounded-lg border border-dashed border-white/15 bg-slate-950/50 p-2 text-center text-sm text-white/60">
+              {loading ? (
+                <span>Generating preview...</span>
+              ) : output ? (
+                <span>{output}</span>
+              ) : imageOne?.preview ? (
+                <Image
+                  src={imageOne.preview}
+                  alt={imageOne.name}
+                  width={1024}
+                  height={1024}
+                  unoptimized
+                  className="h-full w-full rounded-md object-contain"
+                />
+              ) : (
+                <span>Your results will display after you generate.</span>
+              )}
             </div>
             {output && (
               <div className="flex items-center justify-between text-xs text-white/60">
