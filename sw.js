@@ -3,7 +3,6 @@
  * Provides caching strategies for optimal performance
  */
 
-const CACHE_NAME = 'cheap-studio-v1.0.0';
 const STATIC_CACHE_NAME = 'cheap-studio-static-v1.0.0';
 const DYNAMIC_CACHE_NAME = 'cheap-studio-dynamic-v1.0.0';
 
@@ -14,11 +13,6 @@ const STATIC_ASSETS = [
   '/styles/main.css',
   '/scripts/main.js',
   '/manifest.json'
-];
-
-// Assets to cache on first request
-const DYNAMIC_ASSETS = [
-  // Add any dynamic assets here
 ];
 
 // Cache strategies
@@ -170,29 +164,33 @@ async function handleCacheFirst(request) {
     // Try cache first
     const cachedResponse = await caches.match(request);
     if (cachedResponse) {
+      trackCachePerformance(true);
       return cachedResponse;
     }
 
     // Fallback to network
     const networkResponse = await fetch(request);
-    
+
     // Cache successful responses
     if (networkResponse.ok) {
       const cache = await caches.open(STATIC_CACHE_NAME);
       cache.put(request, networkResponse.clone());
     }
-    
+
+    trackCachePerformance(false);
+
     return networkResponse;
-    
+
   } catch (error) {
     console.error('Cache first strategy failed:', error);
-    
+
     // Try to return cached version as fallback
     const cachedResponse = await caches.match(request);
     if (cachedResponse) {
+      trackCachePerformance(true);
       return cachedResponse;
     }
-    
+
     // Return offline page or error response
     return createErrorResponse();
   }
@@ -203,24 +201,27 @@ async function handleNetworkFirst(request) {
   try {
     // Try network first
     const networkResponse = await fetch(request);
-    
+
     // Cache successful responses
     if (networkResponse.ok) {
       const cache = await caches.open(DYNAMIC_CACHE_NAME);
       cache.put(request, networkResponse.clone());
     }
-    
+
+    trackCachePerformance(false);
+
     return networkResponse;
-    
+
   } catch (error) {
     console.error('Network first strategy failed:', error);
-    
+
     // Fallback to cache
     const cachedResponse = await caches.match(request);
     if (cachedResponse) {
+      trackCachePerformance(true);
       return cachedResponse;
     }
-    
+
     // Return offline page or error response
     return createErrorResponse();
   }
@@ -229,7 +230,13 @@ async function handleNetworkFirst(request) {
 // Cache only strategy
 async function handleCacheOnly(request) {
   const cachedResponse = await caches.match(request);
-  return cachedResponse || createErrorResponse();
+  if (cachedResponse) {
+    trackCachePerformance(true);
+    return cachedResponse;
+  }
+
+  trackCachePerformance(false);
+  return createErrorResponse();
 }
 
 // Network only strategy

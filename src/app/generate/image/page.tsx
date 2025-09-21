@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -67,32 +68,33 @@ export default function ImageGeneratorPage() {
   };
 
   return (
-    <div className="relative mx-auto max-w-6xl space-y-8 px-4 py-10">
-      <div className="space-y-1 text-white">
-        <p className="text-xs uppercase tracking-[0.3em] text-sky-300">
-          Gemini 2.5 Flash Image playground (single file)
-        </p>
-        <h1 className="text-3xl font-semibold">Image Generator</h1>
-        <p className="text-sm text-white/70">
-          Paste your Gemini API key, describe the change you want, and preview the
-          generated image. This is a client-only playground.
-        </p>
+    <div className="relative mx-auto max-w-6xl space-y-8 px-4 py-10 text-white">
+      <div className="space-y-3">
+        <span className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.4em] text-sky-200/80">
+          Gemini 2.5 · Playground
+        </span>
+        <div className="space-y-2">
+          <h1 className="text-3xl font-semibold">Image Generator</h1>
+          <p className="max-w-2xl text-sm text-white/70">
+            Paste your Gemini API key, describe the change you want, and preview the generated image. This is a client-only playground.
+          </p>
+        </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,_2fr)_minmax(0,_1fr)]">
-        <Card className="border-white/10 bg-slate-900/60 text-slate-100">
+        <Card className="border-white/10 bg-[#101f3c]/60 text-white shadow-[0_25px_60px_rgba(8,15,40,0.45)]">
           <CardHeader className="pb-2">
             <div className="flex items-start justify-between">
               <div>
-                <CardTitle>Gemini setup</CardTitle>
-                <CardDescription>Stored only while this tab is open.</CardDescription>
+                <CardTitle className="text-white">Gemini setup</CardTitle>
+                <CardDescription className="text-white/60">Stored only while this tab is open.</CardDescription>
               </div>
               <span className="rounded-full bg-sky-500/10 px-3 py-1 text-xs text-sky-300">
                 Model ready
               </span>
             </div>
           </CardHeader>
-          <CardContent className="space-y-6 text-sm">
+          <CardContent className="space-y-6 text-sm text-white/70">
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="api-key">Gemini API key</Label>
@@ -102,6 +104,7 @@ export default function ImageGeneratorPage() {
                   placeholder="Alza..."
                   value={apiKey}
                   onChange={(event) => setApiKey(event.target.value)}
+                  className="border-white/10 bg-[#0b1229]/70 text-white placeholder:text-white/40 focus-visible:ring-sky-500"
                 />
               </div>
               <div className="space-y-2">
@@ -110,7 +113,7 @@ export default function ImageGeneratorPage() {
                   id="model"
                   value={model}
                   onChange={(event) => setModel(event.target.value)}
-                  className="h-10 w-full rounded-md border border-white/10 bg-slate-950/60 px-3 text-sm"
+                  className="h-10 w-full rounded-md border border-white/10 bg-[#0b1229]/70 px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500/60"
                 >
                   {MODELS.map((item) => (
                     <option key={item} value={item}>
@@ -134,7 +137,7 @@ export default function ImageGeneratorPage() {
                 placeholder="Example: Replace the phone in the person hand with a banana. Keep lighting consistent."
                 value={prompt}
                 onChange={(event) => setPrompt(event.target.value)}
-                className="resize-none border-white/10 bg-slate-950/60"
+                className="resize-none border-white/10 bg-[#0b1229]/70 text-white placeholder:text-white/40 focus-visible:ring-sky-500"
               />
             </div>
 
@@ -148,13 +151,14 @@ export default function ImageGeneratorPage() {
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-xs text-white/60">
                   <span>Image 2 (style or reference)</span>
-                  <button
+                  <Button
                     type="button"
+                    variant="ghost"
                     onClick={onSwap}
-                    className="text-xs font-medium text-sky-300 hover:text-sky-200"
+                    className="h-7 rounded-full border border-white/15 bg-white/5 px-3 text-[11px] font-medium uppercase tracking-wider text-white hover:border-sky-400/40 hover:bg-sky-500/10"
                   >
-                    Swap 1 &lt;-&gt; 2
-                  </button>
+                    Swap 1 ↔ 2
+                  </Button>
                 </div>
                 <DropSlot
                   label="Image 2"
@@ -170,8 +174,8 @@ export default function ImageGeneratorPage() {
                 <Button
                   key={preset}
                   type="button"
-                  variant="secondary"
-                  className="bg-white/10 text-white hover:bg-white/20"
+                  variant="ghost"
+                  className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white hover:border-sky-400/40 hover:bg-sky-500/10"
                   onClick={() => applyPreset(preset)}
                 >
                   {preset}
@@ -196,7 +200,7 @@ export default function ImageGeneratorPage() {
                 <Button
                   type="button"
                   variant="ghost"
-                  className="border border-white/10 bg-white/5 text-white hover:bg-white/10"
+                  className="rounded-full border border-white/15 bg-white/5 px-5 text-sm text-white hover:border-sky-400/40 hover:bg-sky-500/10"
                   onClick={onClear}
                 >
                   Clear
@@ -205,7 +209,7 @@ export default function ImageGeneratorPage() {
                   type="button"
                   disabled={loading || !prompt}
                   onClick={onGenerate}
-                  className="bg-sky-500 text-white hover:bg-sky-400"
+                  className="rounded-full bg-gradient-to-r from-sky-500 to-indigo-500 px-5 text-sm font-medium text-white shadow-[0_10px_30px_rgba(56,189,248,0.35)] hover:from-sky-400 hover:to-indigo-400 disabled:opacity-60"
                 >
                   {loading ? "Generating..." : "Generate"}
                 </Button>
@@ -214,13 +218,13 @@ export default function ImageGeneratorPage() {
           </CardContent>
         </Card>
 
-        <Card className="flex h-full flex-col border-white/10 bg-slate-900/60 text-slate-100">
+        <Card className="flex h-full flex-col border-white/10 bg-[#101f3c]/60 text-white shadow-[0_25px_60px_rgba(8,15,40,0.45)]">
           <CardHeader>
-            <CardTitle>Output</CardTitle>
-            <CardDescription>Your generated image preview appears here.</CardDescription>
+            <CardTitle className="text-white">Output</CardTitle>
+            <CardDescription className="text-white/60">Your generated image preview appears here.</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-1 flex-col gap-4">
-            <div className="flex-1 rounded-lg border border-dashed border-white/15 bg-slate-950/50 p-6 text-center text-sm text-white/60">
+            <div className="flex-1 rounded-xl border border-dashed border-white/15 bg-gradient-to-br from-[#0b1229]/70 via-[#091021]/70 to-[#060912]/80 p-6 text-center text-sm text-white/70">
               {loading && <span>Generating preview...</span>}
               {!loading && output && <span>{output}</span>}
               {!loading && !output && <span>Your results will display after you generate.</span>}
@@ -228,7 +232,10 @@ export default function ImageGeneratorPage() {
             {output && (
               <div className="flex items-center justify-between text-xs text-white/60">
                 <span>Download and inspect the output before sharing.</span>
-                <Button type="button" variant="secondary" className="bg-white/10 text-white hover:bg-white/20">
+                <Button
+                  type="button"
+                  className="rounded-full bg-gradient-to-r from-sky-500 to-indigo-500 px-4 text-xs font-medium text-white shadow-[0_8px_26px_rgba(56,189,248,0.35)] hover:from-sky-400 hover:to-indigo-400"
+                >
                   Download image
                 </Button>
               </div>
@@ -238,9 +245,9 @@ export default function ImageGeneratorPage() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,_2fr)_minmax(0,_1fr)]">
-        <Card className="border-white/10 bg-slate-900/60 text-slate-100">
+        <Card className="border-white/10 bg-[#101f3c]/60 text-white shadow-[0_25px_60px_rgba(8,15,40,0.45)]">
           <CardHeader>
-            <CardTitle>How it works</CardTitle>
+            <CardTitle className="text-white">How it works</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 text-sm text-white/70">
             <ol className="space-y-2 pl-4">
@@ -263,10 +270,7 @@ export default function ImageGeneratorPage() {
           </CardContent>
         </Card>
 
-        <CostEstimator
-          mode="image"
-          className="border-white/10 bg-slate-900/60 text-slate-100"
-        />
+        <CostEstimator mode="image" />
       </div>
     </div>
   );
@@ -314,9 +318,9 @@ function DropSlot({ label, helper, file, onFileChange }: DropSlotProps) {
 
   return (
     <div className="space-y-2">
-      <div className="text-xs text-white/60">{label}</div>
+      <div className="text-xs uppercase tracking-[0.3em] text-white/40">{label}</div>
       <div
-        className="flex h-40 cursor-pointer flex-col justify-center rounded-lg border border-dashed border-white/15 bg-slate-950/40 text-center text-xs text-white/50 transition hover:border-white/30 hover:text-white/70"
+        className="flex h-44 cursor-pointer flex-col justify-center rounded-xl border border-dashed border-white/15 bg-[#0b1229]/50 text-center text-xs text-white/60 transition hover:border-sky-400/40 hover:text-white"
         onClick={() => inputRef.current?.click()}
         onDragOver={(event) => {
           event.preventDefault();
@@ -330,15 +334,14 @@ function DropSlot({ label, helper, file, onFileChange }: DropSlotProps) {
       >
         <div className="flex h-full flex-col items-center justify-center gap-3 px-6">
           {file?.preview ? (
-            <>
-              {/* Using img tag for better base64 and external URL support */}
-              <img
-                src={file.preview}
-                alt={file.name}
-                className="h-24 w-24 rounded-md object-cover"
-                style={{ maxWidth: '120px', maxHeight: '120px' }}
-              />
-            </>
+            <Image
+              src={file.preview}
+              alt={file.name}
+              width={120}
+              height={120}
+              className="h-24 w-24 rounded-md object-cover"
+              unoptimized
+            />
           ) : (
             <p className="font-medium text-white/70">Drop or click to upload</p>
           )}

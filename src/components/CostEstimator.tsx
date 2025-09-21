@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
 
 type Props = { mode: "image" | "video"; className?: string };
 
@@ -19,9 +20,9 @@ export default function CostEstimator({ mode, className }: Props) {
   const vidUSD = estimateVideoUSD(sec);
 
   return (
-    <Card className={className}>
+    <Card className={cn("border-white/10 bg-[#101f3c]/60 text-slate-100 shadow-[0_20px_60px_rgba(8,15,40,0.45)]", className)}>
       <CardHeader>
-        <CardTitle>Cost Estimator</CardTitle>
+        <CardTitle className="text-white">Cost Estimator</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {mode === "image" ? (
@@ -50,12 +51,12 @@ export default function CostEstimator({ mode, className }: Props) {
                 />
               </div>
             </div>
-            <div className="text-sm text-muted-foreground">
+            <div className="text-sm text-white/60">
               Megapixels billed (ceil): <b>{mp} MP</b>
             </div>
             <Separator />
-            <div className="text-lg">
-              Estimated cost: <b>${imgUSD.toFixed(3)}</b>
+            <div className="text-lg text-white">
+              Estimated cost: <span className="font-semibold text-sky-300">${imgUSD.toFixed(3)}</span>
             </div>
           </>
         ) : (
@@ -69,12 +70,12 @@ export default function CostEstimator({ mode, className }: Props) {
               max={30}
               step={1}
             />
-            <div className="text-sm text-muted-foreground">
+            <div className="text-sm text-white/60">
               Seconds: <b>{sec}</b>
             </div>
             <Separator />
-            <div className="text-lg">
-              Estimated cost: <b>${vidUSD.toFixed(3)}</b>
+            <div className="text-lg text-white">
+              Estimated cost: <span className="font-semibold text-sky-300">${vidUSD.toFixed(3)}</span>
             </div>
           </>
         )}
