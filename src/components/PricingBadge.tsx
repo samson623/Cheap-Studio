@@ -8,7 +8,7 @@ type PricingBadgeProps = {
 
 export default function PricingBadge({ label = "Est. Cost", valueUSD }: PricingBadgeProps) {
   return (
-    <Badge variant="secondary">
+    <Badge className="border-white/10 bg-emerald-500/20 text-emerald-100">
       {label}: {formatUSD(valueUSD)}
     </Badge>
   );

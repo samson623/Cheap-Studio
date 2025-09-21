@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * Cheap Studio - Service Worker
  * Provides caching strategies for optimal performance
