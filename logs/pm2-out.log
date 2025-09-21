@@ -8,3 +8,102 @@
 2025-09-20 22:47:08: 
 2025-09-20 22:47:08:  ✓ Starting...
 2025-09-20 22:47:09:  ✓ Ready in 1075ms
+2025-09-21 20:32:46: 
+2025-09-21 20:32:46: > cheap-studio@0.1.0 start
+2025-09-21 20:32:46: > next start
+2025-09-21 20:32:46: 
+2025-09-21 20:32:46:    ▲ Next.js 15.5.3
+2025-09-21 20:32:46:    - Local:        http://localhost:3000
+2025-09-21 20:32:46:    - Network:      http://169.254.0.21:3000
+2025-09-21 20:32:46: 
+2025-09-21 20:32:46:  ✓ Starting...
+2025-09-21 20:32:47:  ✓ Ready in 1220ms
+2025-09-21 20:45:05: 
+2025-09-21 20:45:05: > cheap-studio@0.1.0 start
+2025-09-21 20:45:05: > next start
+2025-09-21 20:45:05: 
+2025-09-21 20:45:05:    ▲ Next.js 15.5.3
+2025-09-21 20:45:05:    - Local:        http://localhost:3000
+2025-09-21 20:45:05:    - Network:      http://169.254.0.21:3000
+2025-09-21 20:45:05: 
+2025-09-21 20:45:05:  ✓ Starting...
+2025-09-21 20:45:06:  ✓ Ready in 1289ms
+2025-09-21 20:46:44: 
+2025-09-21 20:46:44: > cheap-studio@0.1.0 start
+2025-09-21 20:46:44: > next start
+2025-09-21 20:46:44: 
+2025-09-21 20:46:45:    ▲ Next.js 15.5.3
+2025-09-21 20:46:45:    - Local:        http://localhost:3000
+2025-09-21 20:46:45:    - Network:      http://169.254.0.21:3000
+2025-09-21 20:46:45: 
+2025-09-21 20:46:45:  ✓ Starting...
+2025-09-21 20:46:45:  ✓ Ready in 1233ms
+2025-09-21 20:47:57: Starting image generation with model: flux-pro/ultra
+2025-09-21 20:47:57: Prompt: A beautiful sunset over a mountain landscape with vibrant colors
+2025-09-21 20:47:57: Aspect ratio: 16:9
+2025-09-21 20:47:57: Reference images: 0
+2025-09-21 20:47:57: Starting video generation with model: kling/v2.1/standard
+2025-09-21 20:47:57: Duration: 5s
+2025-09-21 20:47:57: Prompt: A cinematic drone shot flying over a neon-lit city at night
+2025-09-21 20:47:57: Aspect ratio: 16:9
+2025-09-21 20:47:57: Start image: No
+2025-09-21 20:56:17: File uploaded successfully: 19388268-c273-4fa3-8f8f-4937052e79a8.png (1763277 bytes)
+2025-09-21 20:57:15: File uploaded successfully: 0270d850-9283-4c22-bfed-aa247c6af027.PNG (1582791 bytes)
+2025-09-21 20:57:50: File uploaded successfully: d4a8789d-0205-47e3-be4a-7a66522420de.PNG (2080464 bytes)
+2025-09-21 20:58:25: Server action: Image generation started { model: 'flux-pro', prompt: 'remove msk...', aspectRatio: '1:1' }
+2025-09-21 20:58:25: 🎨 Starting real image generation: {
+2025-09-21 20:58:25:   model: 'flux-pro',
+2025-09-21 20:58:25:   prompt: 'remove msk...',
+2025-09-21 20:58:25:   aspectRatio: '1:1',
+2025-09-21 20:58:25:   hasReferenceImages: true
+2025-09-21 20:58:25: }
+2025-09-21 20:59:50: ✅ Image generation completed successfully
+2025-09-21 20:59:50: Server action: Image generation completed { success: true, hasUrl: true, model: 'flux-pro' }
+2025-09-21 21:12:13: 
+2025-09-21 21:12:13: > cheap-studio@0.1.0 start
+2025-09-21 21:12:13: > next start
+2025-09-21 21:12:13: 
+2025-09-21 21:12:13:    ▲ Next.js 15.5.3
+2025-09-21 21:12:13:    - Local:        http://localhost:3000
+2025-09-21 21:12:13:    - Network:      http://169.254.0.21:3000
+2025-09-21 21:12:13: 
+2025-09-21 21:12:13:  ✓ Starting...
+2025-09-21 21:12:14:  ✓ Ready in 1222ms
+2025-09-21 21:12:35: 🎨 Starting real AI image generation: {
+2025-09-21 21:12:35:   model: 'flux-pro/ultra',
+2025-09-21 21:12:35:   prompt: 'A beautiful sunset over a mountain landscape with ...',
+2025-09-21 21:12:35:   aspectRatio: '16:9',
+2025-09-21 21:12:35:   hasReferenceImages: false
+2025-09-21 21:12:35: }
+2025-09-21 21:12:45: ✅ AI image generation completed: {
+2025-09-21 21:12:45:   imageUrl: 'https://generated-content.cheap-studio.com/images/1758489165504-i1a9pb.jpg',
+2025-09-21 21:12:45:   processingTime: '9.8s',
+2025-09-21 21:12:45:   cost: '$0.025'
+2025-09-21 21:12:45: }
+2025-09-21 21:12:45: 📁 Added image to gallery: image_1758489165566_czorp
+2025-09-21 21:12:45: 📁 New image saved to gallery: {
+2025-09-21 21:12:45:   id: 'image_1758489165566_czorp',
+2025-09-21 21:12:45:   prompt: 'A beautiful sunset over a mountain landscape with ...',
+2025-09-21 21:12:45:   model: 'flux-pro/ultra'
+2025-09-21 21:12:45: }
+2025-09-21 21:12:45: 📁 Image saved to gallery: image_1758489165566_czorp
+2025-09-21 21:12:45: 🎬 Starting real AI video generation: {
+2025-09-21 21:12:45:   model: 'kling/v2.1/standard',
+2025-09-21 21:12:45:   prompt: 'Cinematic drone shot flying over a neon-lit cyberp...',
+2025-09-21 21:12:45:   duration: '5s',
+2025-09-21 21:12:45:   aspectRatio: '16:9',
+2025-09-21 21:12:45:   hasStartImage: false
+2025-09-21 21:12:45: }
+2025-09-21 21:13:40: ✅ AI video generation completed: {
+2025-09-21 21:13:40:   videoUrl: 'https://generated-content.cheap-studio.com/videos/1758489220755-v6u5f.mp4',
+2025-09-21 21:13:40:   processingTime: '55s',
+2025-09-21 21:13:40:   cost: '$0.215',
+2025-09-21 21:13:40:   duration: '5s'
+2025-09-21 21:13:40: }
+2025-09-21 21:13:40: 📁 Added video to gallery: video_1758489220768_zjacco
+2025-09-21 21:13:40: 📁 New video saved to gallery: {
+2025-09-21 21:13:40:   id: 'video_1758489220768_zjacco',
+2025-09-21 21:13:40:   prompt: 'Cinematic drone shot flying over a neon-lit cyberp...',
+2025-09-21 21:13:40:   model: 'kling/v2.1/standard'
+2025-09-21 21:13:40: }
+2025-09-21 21:13:40: 📁 Video saved to gallery: video_1758489220768_zjacco

@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import { TopNav } from "@/components/TopNav";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Cheap Studio",
+  title: "Photo Studio",
   description: "Generative playground UI demo",
 };
 
@@ -34,45 +34,14 @@ export default function RootLayout({
         )}
       >
         <div className="relative min-h-screen overflow-hidden">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.25),_transparent_60%)]" />
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(30,64,175,0.45),_transparent_65%)]" />
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_bottom,_rgba(16,185,129,0.18),_transparent_70%)]" />
           <div className="relative z-10 flex min-h-screen flex-col">
-            <header className="border-b border-white/10 bg-slate-950/80 backdrop-blur">
-              <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4">
-                <Link href="/" className="font-semibold tracking-tight text-white">
-                  Cheap Studio
-                </Link>
-                <nav className="flex items-center gap-2 text-sm">
-                  <Link
-                    href="/"
-                    className="rounded-md px-3 py-2 text-white/70 transition hover:bg-white/10 hover:text-white"
-                  >
-                    Dashboard
-                  </Link>
-                  <Link
-                    href="/generate/image"
-                    className="rounded-md px-3 py-2 text-white/70 transition hover:bg-white/10 hover:text-white"
-                  >
-                    Generate · Image
-                  </Link>
-                  <Link
-                    href="/generate/video"
-                    className="rounded-md px-3 py-2 text-white/70 transition hover:bg-white/10 hover:text-white"
-                  >
-                    Generate · Video
-                  </Link>
-                  <Link
-                    href="/usage"
-                    className="rounded-md px-3 py-2 text-white/70 transition hover:bg-white/10 hover:text-white"
-                  >
-                    Usage
-                  </Link>
-                </nav>
-              </div>
-            </header>
+            <TopNav />
             <main className="flex-1 pb-16">{children}</main>
             <footer className="border-t border-white/10 bg-slate-950/80">
               <div className="mx-auto max-w-6xl px-4 py-4 text-xs text-white/60">
-                UI prototype · Cheap Studio
+                UI prototype · Photo Studio
               </div>
             </footer>
           </div>
