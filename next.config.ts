@@ -1,6 +1,23 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Configure for Replit environment
+  async rewrites() {
+    return []
+  },
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'X-Frame-Options',
+            value: 'ALLOWALL',
+          },
+        ],
+      },
+    ]
+  },
   images: {
     dangerouslyAllowSVG: true,
     contentDispositionType: 'attachment',
