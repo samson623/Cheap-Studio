@@ -18,39 +18,72 @@ import {
   UploadDropzone,
   type UploadedFile,
 } from "@/components/UploadDropzone";
+import { generateVideoAction } from "@/lib/actions";
+import { GenerationResult } from "@/lib/ai-generation";
 
 const MODELS = [
-  "gemini-2.0-pro-video",
-  "gemini-1.5-pro-video",
-  "gemini-1.5-flash-video",
+  { id: "kling-v2", name: "Kling V2 - Advanced video generation", maxDuration: 10 },
+  { id: "gemini-veo2", name: "Gemini Veo 2 - Fast high-quality", maxDuration: 8 },
+  { id: "gemini-veo3", name: "Gemini Veo 3 - Latest with sound", maxDuration: 8 },
+  { id: "hunyuan", name: "Hunyuan - High quality", maxDuration: 5 },
 ];
 
 export default function VideoGeneratorPage() {
-  const [model, setModel] = useState(MODELS[0]);
+  const [model, setModel] = useState(MODELS[0].id);
   const [prompt, setPrompt] = useState("");
   const [narration, setNarration] = useState("");
-  const [duration, setDuration] = useState(8);
+  const [duration, setDuration] = useState(5);
   const [startImage, setStartImage] = useState<UploadedFile | null>(null);
   const [loading, setLoading] = useState(false);
-  const [output, setOutput] = useState<string>("");
+  const [result, setResult] = useState<GenerationResult | null>(null);
+  const [error, setError] = useState<string>("");
 
   const sanitizedDuration = Math.max(1, duration);
   const est = estimateVideoUSD(sanitizedDuration);
 
   const onGenerate = async () => {
+    if (!prompt.trim()) {
+      setError("Please provide a prompt");
+      return;
+    }
+
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 1200));
-    setOutput(
-      `Generated a ${sanitizedDuration}s preview for "${prompt || "your video idea"}" using ${model}.`
-    );
-    setLoading(false);
+    setError("");
+    setResult(null);
+
+    try {
+      // Get selected model info for max duration
+      const selectedModel = MODELS.find(m => m.id === model);
+      const maxDuration = selectedModel?.maxDuration || 10;
+      const finalDuration = Math.min(sanitizedDuration, maxDuration);
+
+      const generationResult = await generateVideoAction({
+        prompt,
+        model,
+        duration: finalDuration,
+        aspectRatio: "16:9",
+        imageUrls: startImage?.url ? [startImage.url] : []
+      });
+
+      setResult(generationResult);
+      
+      if (!generationResult.success) {
+        setError(generationResult.error || "Generation failed");
+      }
+    } catch (err) {
+      setError("An unexpected error occurred");
+      console.error("Generation error:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const onClear = () => {
     setPrompt("");
     setNarration("");
     setStartImage(null);
-    setOutput("");
+    setResult(null);
+    setError("");
   };
 
   return (
@@ -58,13 +91,12 @@ export default function VideoGeneratorPage() {
       <div className="flex flex-wrap items-end justify-between gap-6 text-white">
         <div className="space-y-3">
           <span className="text-xs font-semibold uppercase tracking-[0.3em] text-sky-300">
-            Gemini 2.5 Flash video playground
+            AI Powered Video Generation
           </span>
-          <h1 className="text-3xl font-semibold tracking-tight">Video Generation</h1>
+          <h1 className="text-3xl font-semibold tracking-tight">Video Studio</h1>
           <p className="max-w-2xl text-sm text-white/70">
-            Craft short cinematic clips with Gemini video models. Provide a
-            detailed prompt, optional narration beats, and an initial frame to
-            guide composition.
+            Create stunning video content using advanced AI models. Upload reference images,
+            write detailed prompts, and generate professional cinematic clips.
           </p>
         </div>
         <div className="rounded-xl border border-white/10 bg-slate-900/60 px-6 py-4 text-sm text-white/70 shadow-xl">
@@ -99,8 +131,8 @@ export default function VideoGeneratorPage() {
                   className="h-10 w-full rounded-md border border-white/10 bg-slate-950/60 px-3 text-sm text-white"
                 >
                   {MODELS.map((item) => (
-                    <option key={item} value={item} className="bg-slate-900 text-white">
-                      {item}
+                    <option key={item.id} value={item.id} className="bg-slate-900 text-white">
+                      {item.name}
                     </option>
                   ))}
                 </select>
@@ -195,20 +227,52 @@ export default function VideoGeneratorPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-1 flex-col gap-4">
-            <div className="flex-1 rounded-xl border border-dashed border-white/15 bg-slate-950/60 p-6 text-center text-sm text-white/60">
-              {loading && <span>Rendering preview...</span>}
-              {!loading && output && <span>{output}</span>}
-              {!loading && !output && (
-                <span>Your generated clip will be displayed after you run a prompt.</span>
+            <div className="flex-1 rounded-xl border border-dashed border-white/15 bg-slate-950/60 p-6 text-center text-sm">
+              {loading && (
+                <div className="text-white/60">
+                  <div className="mb-2">🎥 Generating your video...</div>
+                  <div className="text-xs">This may take 2-5 minutes</div>
+                </div>
+              )}
+              
+              {error && (
+                <div className="text-red-400">
+                  <div className="mb-2">❌ Generation failed</div>
+                  <div className="text-xs">{error}</div>
+                </div>
+              )}
+              
+              {result?.success && result.data && (
+                <div className="text-white/80">
+                  <div className="mb-3">✅ Video generated successfully!</div>
+                  <div className="text-xs space-y-1">
+                    <div>Model: {String(result.data.metadata?.model || 'Unknown')}</div>
+                    <div>Duration: {String(result.data.metadata?.duration || 'Unknown')}s</div>
+                    <div>Processing time: {String(result.data.metadata?.processingTime || 'Unknown')}</div>
+                    <div>Cost: {String(result.data.metadata?.cost || 'Unknown')}</div>
+                  </div>
+                  {result.data.url && (
+                    <div className="mt-4 p-4 bg-white/5 rounded-lg">
+                      <div className="text-xs mb-2">Generated Video:</div>
+                      <div className="text-sky-300">{result.data.url}</div>
+                    </div>
+                  )}
+                </div>
+              )}
+              
+              {!loading && !error && !result && (
+                <span className="text-white/60">Your generated video will appear here.</span>
               )}
             </div>
-            {output && (
+            
+            {result?.success && result.data?.url && (
               <div className="flex items-center justify-between text-xs text-white/60">
-                <span>Review frames before sharing publicly.</span>
+                <span>Ready to download and share!</span>
                 <Button
                   type="button"
                   variant="secondary"
                   className="border border-white/10 bg-white/10 text-white hover:bg-white/20"
+                  onClick={() => window.open(result.data?.url, '_blank')}
                 >
                   Download MP4
                 </Button>

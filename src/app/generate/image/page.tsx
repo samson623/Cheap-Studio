@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
+
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -18,11 +18,14 @@ import {
   UploadDropzone,
   type UploadedFile,
 } from "@/components/UploadDropzone";
+import { generateImageAction } from "@/lib/actions";
+import { GenerationResult } from "@/lib/ai-generation";
 
 const MODELS = [
-  "gemini-2.5-flash-image-preview",
-  "gemini-2.5-flash",
-  "gemini-1.5-pro-latest",
+  { id: "flux-pro", name: "FLUX Pro - Fast and stable" },
+  { id: "gpt-image-1", name: "GPT Image - Advanced editing" },
+  { id: "imagen4", name: "Imagen 4 - Latest Google model" },
+  { id: "recraft-v3", name: "Recraft V3 - Realistic images" },
 ];
 
 const QUICK_PRESETS = [
@@ -35,29 +38,57 @@ const QUICK_PRESETS = [
 ];
 
 export default function ImageGeneratorPage() {
-  const [apiKey, setApiKey] = useState("");
-  const [model, setModel] = useState(MODELS[0]);
+  const [model, setModel] = useState(MODELS[0].id);
   const [prompt, setPrompt] = useState("");
   const [imageOne, setImageOne] = useState<UploadedFile | null>(null);
   const [imageTwo, setImageTwo] = useState<UploadedFile | null>(null);
   const [requestDetail, setRequestDetail] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [output, setOutput] = useState<string>("");
+  const [result, setResult] = useState<GenerationResult | null>(null);
+  const [error, setError] = useState<string>("");
 
   const onGenerate = async () => {
+    if (!prompt.trim()) {
+      setError("Please provide a prompt");
+      return;
+    }
+
     setLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 900));
-    setOutput(
-      `Generated preview for "${prompt || "your prompt"}" using ${model}.`
-    );
-    setLoading(false);
+    setError("");
+    setResult(null);
+
+    try {
+      // Prepare image URLs if uploaded
+      const imageUrls: string[] = [];
+      if (imageOne?.url) imageUrls.push(imageOne.url);
+      if (imageTwo?.url) imageUrls.push(imageTwo.url);
+
+      const generationResult = await generateImageAction({
+        prompt,
+        model,
+        aspectRatio: "1:1", // You could make this configurable
+        imageUrls
+      });
+
+      setResult(generationResult);
+      
+      if (!generationResult.success) {
+        setError(generationResult.error || "Generation failed");
+      }
+    } catch (err) {
+      setError("An unexpected error occurred");
+      console.error("Generation error:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const onClear = () => {
     setPrompt("");
     setImageOne(null);
     setImageTwo(null);
-    setOutput("");
+    setResult(null);
+    setError("");
     setRequestDetail(false);
   };
 
@@ -74,13 +105,12 @@ export default function ImageGeneratorPage() {
     <div className="relative mx-auto max-w-6xl space-y-10 px-4 py-12">
       <div className="space-y-3 text-white">
         <span className="text-xs font-semibold uppercase tracking-[0.3em] text-sky-300">
-          Gemini 2.5 Flash image playground
+          AI Powered Image Generation
         </span>
-        <h1 className="text-3xl font-semibold tracking-tight">Image Playground</h1>
+        <h1 className="text-3xl font-semibold tracking-tight">Image Studio</h1>
         <p className="max-w-2xl text-sm text-white/70">
-          Configure the Gemini image model, describe the edit you want, and
-          preview the generated result instantly. Nothing is uploaded to a
-          server—this is a client-only playground.
+          Generate stunning images using advanced AI models. Upload reference images,
+          write detailed prompts, and create professional-quality visuals in seconds.
         </p>
       </div>
 
@@ -94,37 +124,22 @@ export default function ImageGeneratorPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6 text-sm">
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="api-key" className="text-xs uppercase tracking-wide">
-                  Gemini API key
-                </Label>
-                <Input
-                  id="api-key"
-                  type="password"
-                  placeholder="AIza..."
-                  value={apiKey}
-                  onChange={(event) => setApiKey(event.target.value)}
-                  className="border-white/10 bg-slate-950/60 text-white placeholder:text-white/40"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="model" className="text-xs uppercase tracking-wide">
-                  Model
-                </Label>
-                <select
-                  id="model"
-                  value={model}
-                  onChange={(event) => setModel(event.target.value)}
-                  className="h-10 w-full rounded-md border border-white/10 bg-slate-950/60 px-3 text-sm text-white"
-                >
-                  {MODELS.map((item) => (
-                    <option key={item} value={item} className="bg-slate-900 text-white">
-                      {item}
-                    </option>
-                  ))}
-                </select>
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="model" className="text-xs uppercase tracking-wide">
+                AI Model
+              </Label>
+              <select
+                id="model"
+                value={model}
+                onChange={(event) => setModel(event.target.value)}
+                className="h-10 w-full rounded-md border border-white/10 bg-slate-950/60 px-3 text-sm text-white"
+              >
+                {MODELS.map((item) => (
+                  <option key={item.id} value={item.id} className="bg-slate-900 text-white">
+                    {item.name}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div className="space-y-2">
@@ -231,22 +246,53 @@ export default function ImageGeneratorPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-1 flex-col gap-4">
-            <div className="flex-1 rounded-xl border border-dashed border-white/15 bg-slate-950/60 p-6 text-center text-sm text-white/60">
-              {loading && <span>Generating preview...</span>}
-              {!loading && output && <span>{output}</span>}
-              {!loading && !output && (
-                <span>Your results will display after you generate.</span>
+            <div className="flex-1 rounded-xl border border-dashed border-white/15 bg-slate-950/60 p-6 text-center text-sm">
+              {loading && (
+                <div className="text-white/60">
+                  <div className="mb-2">🎨 Generating your image...</div>
+                  <div className="text-xs">This may take 30-60 seconds</div>
+                </div>
+              )}
+              
+              {error && (
+                <div className="text-red-400">
+                  <div className="mb-2">❌ Generation failed</div>
+                  <div className="text-xs">{error}</div>
+                </div>
+              )}
+              
+              {result?.success && result.data && (
+                <div className="text-white/80">
+                  <div className="mb-3">✅ Image generated successfully!</div>
+                  <div className="text-xs space-y-1">
+                    <div>Model: {String(result.data.metadata?.model || 'Unknown')}</div>
+                    <div>Processing time: {String(result.data.metadata?.processingTime || 'Unknown')}</div>
+                    <div>Cost: {String(result.data.metadata?.cost || 'Unknown')}</div>
+                  </div>
+                  {result.data.url && (
+                    <div className="mt-4 p-4 bg-white/5 rounded-lg">
+                      <div className="text-xs mb-2">Generated Image Preview:</div>
+                      <div className="text-sky-300">{result.data.url}</div>
+                    </div>
+                  )}
+                </div>
+              )}
+              
+              {!loading && !error && !result && (
+                <span className="text-white/60">Your generated image will appear here.</span>
               )}
             </div>
-            {output && (
+            
+            {result?.success && result.data?.url && (
               <div className="flex items-center justify-between text-xs text-white/60">
-                <span>Download and inspect the output before sharing.</span>
+                <span>Ready to download and use!</span>
                 <Button
                   type="button"
                   variant="secondary"
                   className="border border-white/10 bg-white/10 text-white hover:bg-white/20"
+                  onClick={() => window.open(result.data?.url, '_blank')}
                 >
-                  Download image
+                  View Image
                 </Button>
               </div>
             )}

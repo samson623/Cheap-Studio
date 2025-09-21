@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 export type UploadedFile = {
@@ -9,6 +9,9 @@ export type UploadedFile = {
   sizeLabel: string;
   file: File;
   preview: string;
+  url?: string;
+  uploading?: boolean;
+  uploadError?: string;
 };
 
 type UploadDropzoneProps = {
@@ -29,6 +32,7 @@ export function UploadDropzone({
   className,
 }: UploadDropzoneProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     if (!file && inputRef.current) {
@@ -36,7 +40,30 @@ export function UploadDropzone({
     }
   }, [file]);
 
-  const handleFiles = (files: FileList | null) => {
+  const uploadFile = async (fileBlob: File) => {
+    const formData = new FormData();
+    formData.append('file', fileBlob);
+
+    try {
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const result = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(result.error || 'Upload failed');
+      }
+
+      return result.data.url;
+    } catch (error) {
+      console.error('Upload error:', error);
+      throw error;
+    }
+  };
+
+  const handleFiles = async (files: FileList | null) => {
     if (!files || files.length === 0) {
       onFileChange(null);
       if (inputRef.current) {
@@ -46,16 +73,40 @@ export function UploadDropzone({
     }
 
     const fileBlob = files[0];
+    
+    // First create the file object with preview
     const reader = new FileReader();
-    reader.onload = () => {
-      onFileChange({
+    reader.onload = async () => {
+      const uploadedFile: UploadedFile = {
         name: fileBlob.name,
         sizeLabel: formatFileSize(fileBlob.size),
         file: fileBlob,
         preview: typeof reader.result === "string" ? reader.result : "",
-      });
-      if (inputRef.current) {
-        inputRef.current.value = "";
+        uploading: true,
+      };
+      
+      onFileChange(uploadedFile);
+
+      // Then upload the file
+      setUploading(true);
+      try {
+        const url = await uploadFile(fileBlob);
+        onFileChange({
+          ...uploadedFile,
+          url,
+          uploading: false,
+        });
+      } catch (error) {
+        onFileChange({
+          ...uploadedFile,
+          uploading: false,
+          uploadError: error instanceof Error ? error.message : 'Upload failed',
+        });
+      } finally {
+        setUploading(false);
+        if (inputRef.current) {
+          inputRef.current.value = "";
+        }
       }
     };
     reader.readAsDataURL(fileBlob);
@@ -81,14 +132,21 @@ export function UploadDropzone({
       >
         <div className="flex h-full flex-col items-center justify-center gap-3 px-6">
           {file?.preview ? (
-            <Image
-              src={file.preview}
-              alt={file.name}
-              width={120}
-              height={120}
-              unoptimized
-              className="h-24 w-24 rounded-md object-cover shadow-lg"
-            />
+            <div className="relative">
+              <Image
+                src={file.preview}
+                alt={file.name}
+                width={120}
+                height={120}
+                unoptimized
+                className="h-24 w-24 rounded-md object-cover shadow-lg"
+              />
+              {(file.uploading || uploading) && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-md">
+                  <div className="text-xs text-white">Uploading...</div>
+                </div>
+              )}
+            </div>
           ) : (
             <p className="text-sm font-semibold text-white/70">
               Drop or click to upload
@@ -97,9 +155,20 @@ export function UploadDropzone({
           <div className="text-xs text-white/60">
             <p>{helper}</p>
             {file && (
-              <p className="mt-1 truncate text-sky-300">
-                {file.name} · {file.sizeLabel}
-              </p>
+              <div className="mt-1 space-y-1">
+                <p className="truncate text-sky-300">
+                  {file.name} · {file.sizeLabel}
+                </p>
+                {file.uploading && (
+                  <p className="text-yellow-400">Uploading...</p>
+                )}
+                {file.url && !file.uploading && (
+                  <p className="text-green-400">✓ Ready</p>
+                )}
+                {file.uploadError && (
+                  <p className="text-red-400">✗ {file.uploadError}</p>
+                )}
+              </div>
             )}
           </div>
         </div>
