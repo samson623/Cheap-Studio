@@ -9,7 +9,7 @@ const NAV_ITEMS = [
   { href: "/dashboard", label: "Dashboard" },
   { href: "/generate/image", label: "Generate · Image" },
   { href: "/generate/video", label: "Generate · Video" },
-  { href: "/", label: "Gallery" },
+  { href: "/gallery", label: "Gallery" },
   { href: "/billing", label: "Billing" },
 ];
 
@@ -27,7 +27,7 @@ export function TopNav() {
     <header className="border-b border-white/10 bg-slate-950/80 backdrop-blur">
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4">
         <Link href="/" className="text-lg font-semibold text-white">
-          Photo Studio
+          Cheap Studio
         </Link>
         <nav className="flex items-center gap-1 text-sm">
           {NAV_ITEMS.map((item) => (

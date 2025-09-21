@@ -244,7 +244,7 @@ export default function VideoGeneratorPage() {
               
               {result?.success && result.data && (
                 <div className="text-white/80">
-                  <div className="mb-3">✅ Video generated successfully!</div>
+                  <div className="mb-3">✅ Video generated & saved to gallery!</div>
                   <div className="text-xs space-y-1">
                     <div>Model: {String(result.data.metadata?.model || 'Unknown')}</div>
                     <div>Duration: {String(result.data.metadata?.duration || 'Unknown')}s</div>
@@ -254,7 +254,17 @@ export default function VideoGeneratorPage() {
                   {result.data.url && (
                     <div className="mt-4 p-4 bg-white/5 rounded-lg">
                       <div className="text-xs mb-2">Generated Video:</div>
-                      <div className="text-sky-300">{result.data.url}</div>
+                      <div className="text-sky-300 mb-3">{result.data.url}</div>
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          className="border-white/10 bg-white/10 text-white hover:bg-white/20"
+                          onClick={() => window.location.href = '/gallery'}
+                        >
+                          🖼️ View Gallery
+                        </Button>
+                      </div>
                     </div>
                   )}
                 </div>

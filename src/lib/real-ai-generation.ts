@@ -146,68 +146,141 @@ export async function performRealVideoGeneration(params: VideoGenerationParams):
 
 // Function that could be called with actual AI tools
 export async function callImageGenerationTool(params: ImageGenerationParams): Promise<GenerationResult> {
-  // This is where you would actually call the image_generation tool
-  // Example structure for the real call:
-  
-  /*
   try {
-    const result = await image_generation({
-      query: params.prompt,
-      model: mapToActualModel(params.model),
-      aspect_ratio: params.aspectRatio,
-      image_urls: params.imageUrls || [],
-      task_summary: `Generate image: ${params.prompt.substring(0, 100)}`
+    console.log('🎨 Calling real AI image generation tool...');
+    
+    // Map frontend model to actual AI tool model
+    let actualModel = "flux-pro/ultra";
+    switch (params.model) {
+      case "gpt-image-1":
+        actualModel = "gpt-image-1";
+        break;
+      case "imagen4":
+        actualModel = "imagen4";
+        break;
+      case "recraft-v3":
+        actualModel = "recraft-v3";
+        break;
+      case "ideogram":
+        actualModel = "ideogram/V_3";
+        break;
+      case "flux-pro":
+      default:
+        actualModel = "flux-pro/ultra";
+        break;
+    }
+
+    // This is a server action, so we need to make the AI tool call differently
+    // Since we can't directly call Claude tools from here, we'll use fetch to call our API
+    const response = await fetch('/api/generate/image/real', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        query: params.prompt,
+        model: actualModel,
+        aspect_ratio: params.aspectRatio,
+        image_urls: params.imageUrls || [],
+        task_summary: `Generate image: ${params.prompt.substring(0, 100)}`
+      })
     });
+
+    if (!response.ok) {
+      throw new Error(`AI generation failed: ${response.statusText}`);
+    }
+
+    const result = await response.json();
     
     return {
       success: true,
       data: {
-        url: result.generated_images[0]?.url,
-        metadata: result.metadata
+        url: result.imageUrl,
+        metadata: {
+          model: actualModel,
+          prompt: params.prompt,
+          aspectRatio: params.aspectRatio,
+          generatedAt: new Date().toISOString(),
+          processingTime: result.processingTime || '45s',
+          cost: result.cost || '$0.025'
+        }
       }
     };
+
   } catch (error) {
+    console.error('❌ Real AI image generation failed:', error);
     return {
       success: false,
-      error: error.message
+      error: error instanceof Error ? error.message : 'Image generation failed'
     };
   }
-  */
-
-  // For now, fall back to simulation
-  return performRealImageGeneration(params);
 }
 
 export async function callVideoGenerationTool(params: VideoGenerationParams): Promise<GenerationResult> {
-  // This is where you would actually call the video_generation tool
-  // Example structure for the real call:
-  
-  /*
   try {
-    const result = await video_generation({
-      query: params.prompt,
-      model: mapToActualVideoModel(params.model),
-      duration: params.duration,
-      aspect_ratio: params.aspectRatio,
-      image_urls: params.imageUrls || [],
-      task_summary: `Generate ${params.duration}s video: ${params.prompt.substring(0, 100)}`
+    console.log('🎬 Calling real AI video generation tool...');
+    
+    // Map frontend model to actual AI tool model
+    let actualModel = "kling/v2.1/standard";
+    switch (params.model) {
+      case "gemini-veo2":
+        actualModel = "gemini/veo2";
+        break;
+      case "gemini-veo3":
+        actualModel = "gemini/veo3";
+        break;
+      case "hunyuan":
+        actualModel = "hunyuan";
+        break;
+      case "kling-v2":
+      default:
+        actualModel = "kling/v2.1/standard";
+        break;
+    }
+
+    // Call our API that has access to AI tools
+    const response = await fetch('/api/generate/video/real', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        query: params.prompt,
+        model: actualModel,
+        duration: params.duration,
+        aspect_ratio: params.aspectRatio,
+        image_urls: params.imageUrls || [],
+        task_summary: `Generate ${params.duration}s video: ${params.prompt.substring(0, 100)}`
+      })
     });
+
+    if (!response.ok) {
+      throw new Error(`AI generation failed: ${response.statusText}`);
+    }
+
+    const result = await response.json();
     
     return {
       success: true,
       data: {
-        url: result.generated_video?.url,
-        metadata: result.metadata
+        url: result.videoUrl,
+        metadata: {
+          model: actualModel,
+          prompt: params.prompt,
+          duration: params.duration,
+          aspectRatio: params.aspectRatio,
+          generatedAt: new Date().toISOString(),
+          processingTime: result.processingTime || '3 min',
+          cost: result.cost || `$${(params.duration * 0.033).toFixed(3)}`
+        }
       }
     };
+
   } catch (error) {
+    console.error('❌ Real AI video generation failed:', error);
     return {
       success: false,
-      error: error.message
+      error: error instanceof Error ? error.message : 'Video generation failed'
     };
   }
-  */
-
-  // For now, fall back to simulation
-  return performRealVideoGeneration(params);
 }
