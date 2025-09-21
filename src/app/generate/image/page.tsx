@@ -1,5 +1,4 @@
 "use client";
-import Image from "next/image";
 import { useRef, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -319,14 +318,15 @@ function DropSlot({ label, helper, file, onFileChange }: DropSlotProps) {
       >
         <div className="flex h-full flex-col items-center justify-center gap-3 px-6">
           {file?.preview ? (
-            <Image
-              src={file.preview}
-              alt={file.name}
-              width={120}
-              height={120}
-              unoptimized
-              className="h-24 w-24 rounded-md object-cover"
-            />
+            <>
+              {/* Using img tag for better base64 and external URL support */}
+              <img
+                src={file.preview}
+                alt={file.name}
+                className="h-24 w-24 rounded-md object-cover"
+                style={{ maxWidth: '120px', maxHeight: '120px' }}
+              />
+            </>
           ) : (
             <p className="font-medium text-white/70">Drop or click to upload</p>
           )}
