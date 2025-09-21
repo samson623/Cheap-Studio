@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -282,9 +282,18 @@ type DropSlotProps = {
 function DropSlot({ label, helper, file, onFileChange }: DropSlotProps) {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
+  useEffect(() => {
+    if (!file && inputRef.current) {
+      inputRef.current.value = "";
+    }
+  }, [file]);
+
   const handleFiles = (files: FileList | null) => {
     if (!files || files.length === 0) {
       onFileChange(null);
+      if (inputRef.current) {
+        inputRef.current.value = "";
+      }
       return;
     }
     const fileBlob = files[0];
@@ -296,6 +305,9 @@ function DropSlot({ label, helper, file, onFileChange }: DropSlotProps) {
         file: fileBlob,
         preview: typeof reader.result === "string" ? reader.result : "",
       });
+      if (inputRef.current) {
+        inputRef.current.value = "";
+      }
     };
     reader.readAsDataURL(fileBlob);
   };
