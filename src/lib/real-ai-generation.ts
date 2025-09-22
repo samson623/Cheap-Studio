@@ -172,12 +172,7 @@ export async function callImageGenerationTool(params: ImageGenerationParams): Pr
 
     // This is a server action, so we need to make the AI tool call differently
     // Since we can't directly call Claude tools from here, we'll use fetch to call our API
-    // IMPORTANT: Node.js fetch requires an absolute URL in this context
-    const baseUrl =
-      process.env.NEXT_PUBLIC_BASE_URL ||
-      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : `http://127.0.0.1:${process.env.PORT || 3000}`);
-
-    const response = await fetch(`${baseUrl}/api/generate/image/real`, {
+    const response = await fetch('/api/generate/image/real', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -244,12 +239,7 @@ export async function callVideoGenerationTool(params: VideoGenerationParams): Pr
     }
 
     // Call our API that has access to AI tools
-    // IMPORTANT: Node.js fetch requires an absolute URL in this context
-    const baseUrl =
-      process.env.NEXT_PUBLIC_BASE_URL ||
-      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : `http://127.0.0.1:${process.env.PORT || 3000}`);
-
-    const response = await fetch(`${baseUrl}/api/generate/video/real`, {
+    const response = await fetch('/api/generate/video/real', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
