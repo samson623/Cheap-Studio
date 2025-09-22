@@ -4,11 +4,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 
 export default function DashboardPage() {
-  const plan = "Starter · $10/mo";
-  const imgUsed = 12;
-  const imgLimit = 100;
-  const vidUsed = 9;
-  const vidLimit = 40;
+  // Match the reference version in the screenshot
+  const planName = "Free";
+  const planPrice = "$0/mo";
+  const imgUsed = 0;
+  const imgLimit = 3;
+  const vidUsed = 0;
+  const vidLimit = 5;
 
   const imagePct = Math.min(100, Math.round((imgUsed / imgLimit) * 100));
   const videoPct = Math.min(100, Math.round((vidUsed / vidLimit) * 100));
@@ -27,12 +29,17 @@ export default function DashboardPage() {
           <CardHeader>
             <CardTitle>Current Plan</CardTitle>
           </CardHeader>
-          <CardContent className="text-sm text-white/70">{plan}</CardContent>
+          <CardContent className="text-sm text-white/70">
+            <div className="space-y-0.5">
+              <div className="text-white">{planName}</div>
+              <div className="text-white/60 text-xs">{planPrice}</div>
+            </div>
+          </CardContent>
         </Card>
 
         <Card className="border-white/10 bg-slate-900/70 text-slate-100 shadow-xl">
           <CardHeader>
-            <CardTitle>Images</CardTitle>
+            <CardTitle>Image Usage</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex justify-between text-sm text-white/70">
@@ -47,7 +54,7 @@ export default function DashboardPage() {
 
         <Card className="border-white/10 bg-slate-900/70 text-slate-100 shadow-xl">
           <CardHeader>
-            <CardTitle>Video Seconds</CardTitle>
+            <CardTitle>Video Usage (seconds)</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex justify-between text-sm text-white/70">
